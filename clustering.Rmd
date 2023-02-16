@@ -18,3 +18,40 @@ library(dplyr)
 library(ggplot2)
 datos <- read.csv("movies.csv")
 ```
+1. Haga el preprocesamiento del dataset, explique qué variables no aportan información a la generación de grupos y por qué. Describa con qué variables calculará los grupos.
+
+- Variables que no aportan: 
+* Id: Solo es una variable para identificar cada pelicula
+* title: al estar usando el titulo original, no es necesaria esta variable
+* homePage: es una variable cualtitiva
+* video: es una variables booleana 
+* director: no es una variable numérica
+* productionCompany: no es una variable numérica
+* productionCountry:no es una variable numérica
+* actors: no es una variable numérica
+* actorsCharacter:no es una variable numérica
+
+- Variables que si aportan: 
+
+Utilizaremos las siguientes variables, ya que consideramos que los calculos que derivan de ellas (media, cuartiles y percentiles) pueden llegar a ser significativas al momento de crear y categorizar los grupos y la cantidad.
+
+* popularity
+* Original_Title
+* originalLanguage: 
+* budget
+* revenue
+* runtime
+* genres
+* genresAmount
+* productionCoAmount
+* productionCountriesAmount
+* releaseDate
+* voteCount
+* voteAvg
+* actorsPopularity
+* actorsAmount
+* castWomenAmount
+* castMenAmount
+
+2. Analice la tendencia al agrupamiento usando el estadístico de Hopkings y la VAT (Visual Assessment 
+of cluster Tendency). Discuta sus resultados e impresiones. 
