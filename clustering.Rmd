@@ -1,0 +1,20 @@
+---
+title: "HDT2 Clustering"
+author: "Cristopher Barrios, Carlos Daniel Estrada"
+date: "16/2/2023"
+output:
+  html_document:
+  code_folding: hide
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+datos <- read.csv("movies.csv")
+```
