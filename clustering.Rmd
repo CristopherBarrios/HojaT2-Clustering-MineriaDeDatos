@@ -57,7 +57,13 @@ Utilizaremos las siguientes variables, ya que consideramos que los calculos que 
 2. Analice la tendencia al agrupamiento usando el estadístico de Hopkings y la VAT (Visual Assessment of cluster Tendency). Discuta sus resultados e impresiones. 
 ```{r}
 
-numericas <- datos[,c("popularity","budget","revenue","runtime","genreAmount","productionCoAmount")]
-hopkins()
+#numericas <- datos[,c("popularity","budget","revenue","runtime","genreAmount","productionCoAmount")]
+datos<-datos[complete.cases(read.csv("movies.csv")),]
+popularity<-datos[,'popularity']
+budget<-datos[,'budget']
+revenue<-datos[,'revenue']
+runtime<-datos[,'runtime']
+voteCount<-datos[,'voteCount']
+#hopkins()
 ```
 

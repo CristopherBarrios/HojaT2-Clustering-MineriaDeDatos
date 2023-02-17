@@ -366,7 +366,63 @@ display: none;
 ## 
 ##     intersect, setdiff, setequal, union</code></pre>
 <pre class="r"><code>library(ggplot2)
+library(hopkins)
 datos &lt;- read.csv(&quot;movies.csv&quot;)</code></pre>
+<ol style="list-style-type: decimal">
+<li>Haga el preprocesamiento del dataset, explique qué variables no
+aportan información a la generación de grupos y por qué. Describa con
+qué variables calculará los grupos.</li>
+</ol>
+<ul>
+<li><p>Variables que no aportan:</p></li>
+<li><p>Id: Solo es una variable para identificar cada pelicula</p></li>
+<li><p>title: al estar usando el titulo original, no es necesaria esta
+variable</p></li>
+<li><p>homePage: es una variable cualtitiva</p></li>
+<li><p>video: es una variables booleana</p></li>
+<li><p>director: no es una variable numérica</p></li>
+<li><p>productionCompany: no es una variable numérica</p></li>
+<li><p>productionCountry:no es una variable numérica</p></li>
+<li><p>actors: no es una variable numérica</p></li>
+<li><p>actorsCharacter:no es una variable numérica</p></li>
+<li><p>Variables que si aportan:</p></li>
+</ul>
+<p>Utilizaremos las siguientes variables, ya que consideramos que los
+calculos que derivan de ellas (media, cuartiles y percentiles) pueden
+llegar a ser significativas al momento de crear y categorizar los grupos
+y la cantidad.</p>
+<ul>
+<li>popularity</li>
+<li>Original_Title</li>
+<li>originalLanguage:</li>
+<li>budget</li>
+<li>revenue</li>
+<li>runtime</li>
+<li>genres</li>
+<li>genresAmount</li>
+<li>productionCoAmount</li>
+<li>productionCountriesAmount</li>
+<li>releaseDate</li>
+<li>voteCount</li>
+<li>voteAvg</li>
+<li>actorsPopularity</li>
+<li>actorsAmount</li>
+<li>castWomenAmount</li>
+<li>castMenAmount</li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li>Analice la tendencia al agrupamiento usando el estadístico de
+Hopkings y la VAT (Visual Assessment of cluster Tendency). Discuta sus
+resultados e impresiones.</li>
+</ol>
+<pre class="r"><code>#numericas &lt;- datos[,c(&quot;popularity&quot;,&quot;budget&quot;,&quot;revenue&quot;,&quot;runtime&quot;,&quot;genreAmount&quot;,&quot;productionCoAmount&quot;)]
+datos&lt;-datos[complete.cases(read.csv(&quot;movies.csv&quot;)),]
+popularity&lt;-datos[,&#39;popularity&#39;]
+budget&lt;-datos[,&#39;budget&#39;]
+revenue&lt;-datos[,&#39;revenue&#39;]
+runtime&lt;-datos[,&#39;runtime&#39;]
+voteCount&lt;-datos[,&#39;voteCount&#39;]
+#hopkins()</code></pre>
 
 
 
