@@ -16,6 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(dplyr)
 library(ggplot2)
+library(hopkins)
 datos <- read.csv("movies.csv")
 ```
 1. Haga el preprocesamiento del dataset, explique qué variables no aportan información a la generación de grupos y por qué. Describa con qué variables calculará los grupos.
@@ -53,5 +54,10 @@ Utilizaremos las siguientes variables, ya que consideramos que los calculos que 
 * castWomenAmount
 * castMenAmount
 
-2. Analice la tendencia al agrupamiento usando el estadístico de Hopkings y la VAT (Visual Assessment 
-of cluster Tendency). Discuta sus resultados e impresiones. 
+2. Analice la tendencia al agrupamiento usando el estadístico de Hopkings y la VAT (Visual Assessment of cluster Tendency). Discuta sus resultados e impresiones. 
+```{r}
+
+numericas <- datos[,c("popularity","budget","revenue","runtime","genreAmount","productionCoAmount")]
+hopkins()
+```
+
