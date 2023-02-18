@@ -89,8 +89,7 @@ DistData<- dist(clustering)
 knitr::opts_chunk$set(fig.width=12, fig.height=8) 
 fviz_dist(DistData, show_labels = F)
 ```
-Como se puede observar esta un poco rosado por lo que...
-
+Como se puede observar esta un poco rosado y vemos que tiene ciertas tendencias por lo que si podemos decir que es clusterisable
 ### 3. Determine cuál es el número de grupos a formar más adecuado para los datos que está trabajando. 
 Haga una gráfica de codo y explique la razón de la elección de la cantidad de clústeres con la que 
 trabajará. 
@@ -110,22 +109,27 @@ NClusters <- 6
 
 K-means
 ```{r}
+km<-kmeans(clustering,NClusters,iter.max =100)
+datos$grupo<-km$cluster
+plotcluster(clustering,km$cluster) 
 
 ```
 
 Cluster Jerarquico
 ```{r}
+Matrix<- dist(clustering)
+hc<-hclust(DistData, method = "ward.D2") 
+plot(hc, cex=0.5, axes=FALSE)
+
+
 
 ```
+Se puede ver en la grafica con la silueta que los clusters utilizados se alinean en la mayoria solo unos pocos son atipicos
 
 ### 5. Determine la calidad del agrupamiento hecho por cada algoritmo con el método de la silueta. Discuta los resultados. 
 
 K-means
 ```{r}
-km<-kmeans(clustering,NClusters,iter.max =100)
-datos$grupo<-km$cluster
-plotcluster(clustering,km$cluster) 
-
 #silueta
 fviz_cluster(km, data = clustering,geom = "point", ellipse.type = "norm")
 SiluetaK<-silhouette(km$cluster,dist(clustering))
@@ -136,10 +140,6 @@ plot(SiluetaK, cex.names=.4, col=1:3, border=NA)
 
 Cluster Jerarquico
 ```{r}
-Matrix<- dist(clustering)
-hc<-hclust(DistData, method = "ward.D2") 
-plot(hc, cex=0.5, axes=FALSE)
-
 # silueta
 rect.hclust(hc,k=3)
 groups<-cutree(hc,k=3) 
@@ -148,9 +148,8 @@ silhc<-silhouette(groups,DistData)
 mean(silhc[,3]) 
 Jerarquico<-mean(silhc[,3])
 plot(silhc, cex.names=.4, col=1:3, border = NA)
-
 ```
-Se puede ver en la grafica con la silueta que los clusters utilizados se alinean en la mayoria solo unos pocos son atipicos
+Se puede observar que la distancia entre elementos del mismo grupo son muy cortas y que la distancia entre grupo y grupo son significativamente mayores, por lo que se considera un agrupamiento ideal 
 
 ### 6. Interprete  los  grupos  basado  en  el  conocimiento  que  tiene  de  los  datos.  Recuerde  investigar  las 
 medidas de tendencia central de las variables continuas y las tablas de frecuencia de las variables categóricas pertenecientes a cada grupo. Identifique hallazgos interesantes debido a las agrupaciones y describa para qué le podría servir.
@@ -180,8 +179,6 @@ Media de runtime, 103.2592
 round(mean(x = norm$voteCount, na.rm = TRUE))
 ```
 Media de voteCount, 1871
-
-
 
 #### Moda
 ```{r}
