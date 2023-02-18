@@ -5,8 +5,8 @@ date: "16/2/2023"
 output:
   html_document:
   code_folding: hide
-  word_document: default
   pdf_document: default
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -16,10 +16,17 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(dplyr)
 library(ggplot2)
+
+# Utilizados en el laboratorio
 library(hopkins)
+library(ggplot2)
+library(factoextra) 
+library(fpc)
+library(cluster)
+
 datos <- read.csv("movies.csv")
 ```
-1. Haga el preprocesamiento del dataset, explique qué variables no aportan información a la generación de grupos y por qué. Describa con qué variables calculará los grupos.
+### 1. Haga el preprocesamiento del dataset, explique qué variables no aportan información a la generación de grupos y por qué. Describa con qué variables calculará los grupos.
 
 - Variables que no aportan: 
 * Id: Solo es una variable para identificar cada pelicula
@@ -54,10 +61,189 @@ Utilizaremos las siguientes variables, ya que consideramos que los calculos que 
 * castWomenAmount
 * castMenAmount
 
-2. Analice la tendencia al agrupamiento usando el estadístico de Hopkings y la VAT (Visual Assessment of cluster Tendency). Discuta sus resultados e impresiones. 
+### 2. Analice la tendencia al agrupamiento usando el estadístico de Hopkings y la VAT (Visual Assessment of cluster Tendency). Discuta sus resultados e impresiones. 
 ```{r}
 
-numericas <- datos[,c("popularity","budget","revenue","runtime","genreAmount","productionCoAmount")]
-hopkins()
+#numericas <- datos[,c("popularity","budget","revenue","runtime","genreAmount","productionCoAmount")]
+#hopkins()
+datos<-datos[complete.cases(read.csv("movies.csv")),]
+
+popularity<-datos[,'popularity']
+budget<-datos[,'budget']
+revenue<-datos[,'revenue']
+runtime<-datos[,'runtime']
+voteCount<-datos[,'voteCount']
+
+norm<-data.frame(popularity,budget,revenue,runtime,voteCount)
+clustering<-scale(norm)
+hopkins(clustering)
+
+
+```
+En esto caso el resultado que se obtuvo de la funcion de hopkins esta lejos del o.5 este nos da 0.9 por lo que se puede determinar que los datos que se nos proveen no son aleatorios, entonces el agrupamiento posterior de este sera mas sencillo
+```{r}
+DistData<- dist(clustering)
 ```
 
+```{r}
+knitr::opts_chunk$set(fig.width=12, fig.height=8) 
+fviz_dist(DistData, show_labels = F)
+```
+Como se puede observar esta un poco rosado por lo que...
+
+### 3. Determine cuál es el número de grupos a formar más adecuado para los datos que está trabajando. 
+Haga una gráfica de codo y explique la razón de la elección de la cantidad de clústeres con la que 
+trabajará. 
+```{r}
+wss <- (nrow(clustering)-1)*sum(apply(clustering,2,var))
+for (i in 1:10) 
+  wss[i] <- sum(kmeans(clustering, centers=i)$withinss)
+plot(1:10, wss, type="b", xlab="Cantidad de Clusters",  ylab="Cantidad de suma de cuadrados")
+```
+Como podemos observar en la grafica de codo el numero de clusters que mejor se acomoda es el de 6
+```{r}
+NClusters <- 6
+```
+
+
+### 4. Utilice  los  algoritmos  k-medias  y  clustering  jerárquico  para  agrupar.  Compare  los  resultados generados por cada uno. 
+
+K-means
+```{r}
+
+```
+
+Cluster Jerarquico
+```{r}
+
+```
+
+### 5. Determine la calidad del agrupamiento hecho por cada algoritmo con el método de la silueta. Discuta los resultados. 
+
+K-means
+```{r}
+km<-kmeans(clustering,NClusters,iter.max =100)
+datos$grupo<-km$cluster
+plotcluster(clustering,km$cluster) 
+
+#silueta
+fviz_cluster(km, data = clustering,geom = "point", ellipse.type = "norm")
+SiluetaK<-silhouette(km$cluster,dist(clustering))
+mean(SiluetaK[,3]) 
+Kmean<-mean(SiluetaK[,3])
+plot(SiluetaK, cex.names=.4, col=1:3, border=NA)
+```
+
+Cluster Jerarquico
+```{r}
+Matrix<- dist(clustering)
+hc<-hclust(DistData, method = "ward.D2") 
+plot(hc, cex=0.5, axes=FALSE)
+
+# silueta
+rect.hclust(hc,k=3)
+groups<-cutree(hc,k=3) 
+datos$gruposHC<-groups
+silhc<-silhouette(groups,DistData)
+mean(silhc[,3]) 
+Jerarquico<-mean(silhc[,3])
+plot(silhc, cex.names=.4, col=1:3, border = NA)
+
+```
+Se puede ver en la grafica con la silueta que los clusters utilizados se alinean en la mayoria solo unos pocos son atipicos
+
+### 6. Interprete  los  grupos  basado  en  el  conocimiento  que  tiene  de  los  datos.  Recuerde  investigar  las 
+medidas de tendencia central de las variables continuas y las tablas de frecuencia de las variables categóricas pertenecientes a cada grupo. Identifique hallazgos interesantes debido a las agrupaciones y describa para qué le podría servir.
+
+#### Medias
+```{r}
+mean(x = norm$popularity, na.rm = TRUE)
+```
+Media de popularidad, 68.1854
+
+```{r}
+mean(x = norm$budget, na.rm = TRUE)
+```
+Media de budget, 24335422
+
+```{r}
+mean(x = norm$revenue, na.rm = TRUE)
+```
+Media de revenue, 78593938
+
+```{r}
+mean(x = norm$runtime, na.rm = TRUE)
+```
+Media de runtime, 103.2592
+
+```{r}
+round(mean(x = norm$voteCount, na.rm = TRUE))
+```
+Media de voteCount, 1871
+
+
+
+#### Moda
+```{r}
+tabla <- table(norm$popularity)
+head(sort(tabla, decreasing = TRUE), n = 15)
+```
+Moda de popularity es 15.804 y 39.372 con 3 repeticiones
+
+```{r}
+tabla <- table(norm$budget)
+head(sort(tabla, decreasing = TRUE), n = 15)
+```
+valor 0 son nulls, Moda de budget es 20000000 con 84 repeticiones
+
+```{r}
+tabla <- table(norm$revenue)
+head(sort(tabla, decreasing = TRUE), n = 15)
+```
+valor 0 son nulls, Moda de revenue es 7e+06 con 3 repeticiones
+
+
+```{r}
+tabla <- table(norm$runtime)
+head(sort(tabla, decreasing = TRUE), n = 15)
+```
+ Moda de runtime son 90 con 143 repeticiones
+
+
+```{r}
+tabla <- table(norm$voteCount)
+head(sort(tabla, decreasing = TRUE), n = 15)
+```
+moda de voteCount es 4 con 15 repeticiones
+
+#### Mediana
+```{r}
+with(norm, median(popularity))
+
+```
+Mediana de popularity, 24.9505
+```{r}
+with(norm, median(budget))
+
+```
+Mediana de budget 3500000
+```{r}
+with(norm, median(revenue))
+
+```
+Mediana de revenue 3982341
+
+```{r}
+with(norm, median(runtime))
+
+```
+Mediana de runtime 102
+
+```{r}
+with(norm, median(voteCount))
+```
+Mediana de voteCount 680.5
+
+### Trabajo  que  sigue:  Describe  el  trabajo  que  desarrollará  a  partir  de  la  generación  de grupos, las tendencias que investigará partiendo de lo que descubrió. 
+
+Con los datos obtenidos lo que podemos hacer para los proximos pasos es usar estos grupos para ver cuales son los usarios que ven las peliculas y mejorar el presupuesto de las peliculas. Tambien se pueden ver que es lo que tienen en comun las peliculas mas populares y asi tener un mejor exito ya que al tener mas datos se pueden crear las peliculas y ya se va a saber si lo que se entrega sera una pelicula popular.
