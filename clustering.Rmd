@@ -3,9 +3,9 @@ title: "HDT2 Clustering"
 author: "Cristopher Barrios, Carlos Daniel Estrada"
 date: "16/2/2023"
 output:
-  html_document:
-  code_folding: hide
   pdf_document: default
+  code_folding: hide
+  html_document:
   word_document: default
 ---
 
@@ -121,7 +121,14 @@ Matrix<- dist(clustering)
 hc<-hclust(DistData, method = "ward.D2") 
 plot(hc, cex=0.5, axes=FALSE)
 
-
+# silueta
+rect.hclust(hc,k=3)
+groups<-cutree(hc,k=3) 
+datos$gruposHC<-groups
+silhc<-silhouette(groups,DistData)
+mean(silhc[,3]) 
+Jerarquico<-mean(silhc[,3])
+plot(silhc, cex.names=.4, col=1:3, border = NA)
 
 ```
 Se puede ver en la grafica con la silueta que los clusters utilizados se alinean en la mayoria solo unos pocos son atipicos
@@ -138,17 +145,6 @@ Kmean<-mean(SiluetaK[,3])
 plot(SiluetaK, cex.names=.4, col=1:3, border=NA)
 ```
 
-Cluster Jerarquico
-```{r}
-# silueta
-rect.hclust(hc,k=3)
-groups<-cutree(hc,k=3) 
-datos$gruposHC<-groups
-silhc<-silhouette(groups,DistData)
-mean(silhc[,3]) 
-Jerarquico<-mean(silhc[,3])
-plot(silhc, cex.names=.4, col=1:3, border = NA)
-```
 Se puede observar que la distancia entre elementos del mismo grupo son muy cortas y que la distancia entre grupo y grupo son significativamente mayores, por lo que se considera un agrupamiento ideal 
 
 ### 6. Interprete  los  grupos  basado  en  el  conocimiento  que  tiene  de  los  datos.  Recuerde  investigar  las 
